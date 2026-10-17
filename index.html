@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lune</title>
+<meta name="theme-color" content="#5B2A6E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lune">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF6F8;--surface:#FFFFFF;--ink:#2B1630;--muted:#7A6880;--line:#EADFE7;
+  --period:#C8325E;--period-soft:#F6D5DF;--pred:#E79AB2;
+  --fertile:#3E8E83;--fertile-soft:#D4ECE8;--ov:#2A6E65;--accent:#5B2A6E;--accent-ink:#fff;--accent-soft:#EFE4F3;
+  --neutral:#E9E0E7;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1A1020;--surface:#251830;--ink:#F4E9F2;--muted:#B3A0BA;--line:#3A2944;
+  --period:#EA5A86;--period-soft:#4A1F33;--pred:#B05A7A;
+  --fertile:#5FB8AB;--fertile-soft:#1F3B38;--ov:#8AD6CB;--accent:#C9A3DB;--accent-ink:#1A1020;--accent-soft:#33223E;--neutral:#3A2944;
+}}
+:root[data-theme="dark"]{
+  --bg:#1A1020;--surface:#251830;--ink:#F4E9F2;--muted:#B3A0BA;--line:#3A2944;
+  --period:#EA5A86;--period-soft:#4A1F33;--pred:#B05A7A;
+  --fertile:#5FB8AB;--fertile-soft:#1F3B38;--ov:#8AD6CB;--accent:#C9A3DB;--accent-ink:#1A1020;--accent-soft:#33223E;--neutral:#3A2944;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.5 Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;font-weight:700;margin:0;line-height:1.15}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.5}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main{max-width:520px;margin:0 auto;padding:20px 18px 110px}
+.top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.date-now{color:var(--muted);font-size:14px}
+.view{display:none}.view.on{display:block}
+.vt{font-size:26px;margin-top:8px}
+
+.ring-wrap{position:relative;width:min(300px,82vw);aspect-ratio:1;margin:12px auto 4px}
+.ring-wrap svg{width:100%;height:100%;display:block}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 48px}
+.ring-day{font-family:"Bricolage Grotesque",sans-serif;font-size:56px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.ring-sub{font-size:15px;color:var(--muted);margin-top:6px}
+.ring-main{font-size:17px;font-weight:600;margin-top:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px 18px;margin-top:14px}
+.card p{margin:0;color:var(--muted)}
+.pill{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+.tip{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.tip-out{color:var(--ink);white-space:pre-wrap}
+.link{background:none;border:none;padding:0;color:var(--accent);font-weight:600}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{border:none;border-radius:14px;padding:14px 12px;font-weight:600;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.period{background:var(--period);color:#fff}
+.btn.wide{width:100%}
+.water{display:flex;align-items:center;justify-content:space-between}
+.water b{font-size:17px}
+.stepper{display:flex;align-items:center;gap:10px}
+.rnd{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;line-height:1}
+.drops{font-size:18px;letter-spacing:2px;margin-top:4px}
+.logged{margin-top:14px;font-size:15px;color:var(--muted)}
+.logged b{color:var(--ink);font-weight:600}
+
+.onb{text-align:center;padding:30px 6px}
+.onb .moon{font-size:64px;line-height:1}
+.onb h1{font-size:30px;margin:14px 0 8px}
+.onb p{color:var(--muted);margin:0 0 20px}
+.field{display:block;text-align:left;font-weight:600;font-size:14px;margin:0 0 6px}
+input[type=date],input[type=number],textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin:10px 0 12px}
+.cal-head h2{font-size:22px;text-transform:capitalize}
+.nav-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wd{text-align:center;font-size:12px;color:var(--muted);padding-bottom:4px}
+.cell{position:relative;aspect-ratio:1;border:none;border-radius:50%;background:transparent;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center}
+.cell.other{opacity:.3}
+.cell.period{background:var(--period);color:#fff}
+.cell.pred{box-shadow:inset 0 0 0 2px var(--pred)}
+.cell.fertile{background:var(--fertile-soft)}
+.cell.ov{background:var(--fertile);color:#fff}
+.cell.today{box-shadow:inset 0 0 0 2px var(--ink)}
+.cell.today.pred{box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 4px var(--pred)}
+.cell .dot{position:absolute;bottom:12%;width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.7}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:18px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:50%;display:inline-block}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px}
+.stat .n{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:700;line-height:1}
+.stat .l{font-size:14px;color:var(--muted);margin-top:4px}
+.stat.full{grid-column:1/-1}
+h3{font-size:18px;margin:22px 0 10px}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hist .m{color:var(--muted);text-align:right}
+.empty{color:var(--muted);font-size:15px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px}
+.chart svg{width:100%;height:auto;display:block}
+
+.set{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}
+.set p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.danger{background:transparent;border:1px solid var(--period);color:var(--period);border-radius:12px;padding:12px;width:100%;font-weight:600;margin-top:10px}
+.note-small{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.5}
+
+/* IA */
+.ai-intro{color:var(--muted);margin:6px 0 14px}
+.msgs{display:flex;flex-direction:column;gap:10px;min-height:120px}
+.msg{max-width:88%;padding:11px 14px;border-radius:18px;white-space:pre-wrap;word-wrap:break-word;font-size:15px}
+.msg.u{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:6px}
+.msg.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.err{align-self:center;background:transparent;color:var(--muted);font-size:14px;text-align:center}
+.msg.think{color:var(--muted);font-style:italic}
+.sugg{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.sugg button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px;font-size:15px}
+.composer{position:sticky;bottom:calc(68px + env(safe-area-inset-bottom,0px));background:var(--bg);padding:10px 0 4px;margin-top:12px;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{min-height:46px;max-height:140px;resize:none;border-radius:22px;padding:11px 16px}
+.send{flex:none;width:46px;height:46px;border-radius:50%;border:none;background:var(--accent);color:var(--accent-ink);font-size:18px;font-weight:700}
+.ai-tools{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.ai-off{background:var(--accent-soft);border-radius:16px;padding:14px;color:var(--ink);font-size:15px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  display:flex;justify-content:center;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.tabs-in{display:flex;width:100%;max-width:520px}
+.tab{flex:1;border:none;background:none;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);font-weight:500}
+.tab .ic{font-size:20px;line-height:1.2}
+.tab[aria-current="page"]{color:var(--accent);font-weight:600}
+
+.scrim{position:fixed;inset:0;background:rgba(20,8,24,.45);z-index:10;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:11;background:var(--bg);border-radius:24px 24px 0 0;
+  max-height:90%;overflow-y:auto;padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  transform:translateY(105%);transition:transform .28s ease}
+.sheet.on{transform:none}
+.sheet-in{max-width:520px;margin:0 auto}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+.sheet h2{font-size:22px;text-transform:capitalize;margin-bottom:14px}
+.sec{margin-bottom:18px}
+.sec-t{font-weight:600;font-size:15px;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.p[aria-pressed="true"]{background:var(--period);border-color:var(--period);color:#fff}
+.toggle{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 16px;font-weight:600}
+.toggle .sw2{width:46px;height:28px;border-radius:99px;background:var(--neutral);position:relative;transition:background .2s;flex:none}
+.toggle .sw2::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle[aria-pressed="true"] .sw2{background:var(--period)}
+.toggle.acc[aria-pressed="true"] .sw2{background:var(--accent)}
+.toggle[aria-pressed="true"] .sw2::after{transform:translateX(18px)}
+.body-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.body-grid label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+.wbox{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 6px}
+.wbox .rnd{width:34px;height:34px;font-size:18px}
+textarea{min-height:90px;resize:vertical}
+.sheet-actions{display:grid;grid-template-columns:1fr 2fr;gap:10px;position:sticky;bottom:0;background:var(--bg);padding-top:8px}
+
+.alert{border-color:var(--period)}
+.conf{font-size:13px;color:var(--muted);text-align:center;margin-top:2px}
+input[type=range]{width:100%;accent-color:var(--period)}
+.summary{white-space:pre-wrap;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;max-height:340px;overflow:auto}
+.res{border-radius:18px;padding:16px;margin:6px 0 14px}
+.res h3{margin:0 0 6px;font-size:22px}
+.res .pct{font-size:14px;font-weight:600;margin-bottom:8px}
+.res p{margin:0 0 6px}
+.todo{margin:0 0 14px;padding-left:18px}.todo li{margin-bottom:10px}
+input[type=text]{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.checkline{display:flex;gap:10px;align-items:center;font-size:15px;margin-bottom:14px}
+.checkline input{width:20px;height:20px;accent-color:var(--accent)}
+.err-msg{color:var(--period);font-size:14px;margin:-6px 0 10px}
+
+.top-r{display:flex;align-items:center;gap:8px}
+.gear{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:17px}
+.ins{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ins li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;gap:12px;font-size:15px}
+.ins .e{font-size:22px;line-height:1.2;flex:none}
+.pcard{background:var(--accent-soft);border-radius:22px;padding:18px}
+.pcard .big{font-family:"Bricolage Grotesque",sans-serif;font-size:26px;font-weight:700;line-height:1.15;margin:6px 0}
+.pcard .sub{color:var(--muted);font-size:14px}
+.prow{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.prow span:first-child{color:var(--muted)}
+.mot{background:var(--surface);border-radius:14px;padding:12px 14px;margin-top:10px;font-size:15px}
+body.standalone #tipBox,body.standalone .needs-claude{display:none!important}
+@media (prefers-reduced-motion:reduce){.sheet,.toggle .sw2::after{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="brand">Lune</span><div class="top-r"><span class="date-now" id="dateNow"></span><button class="gear" id="gear" aria-label="Réglages">⚙️</button></div></div>
+
+  <section class="view on" id="v-today"></section>
+
+  <section class="view" id="v-cal">
+    <div class="cal-head">
+      <button class="nav-btn" id="prevM" aria-label="Mois précédent">‹</button>
+      <h2 id="monthT"></h2>
+      <button class="nav-btn" id="nextM" aria-label="Mois suivant">›</button>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--period)"></i>Règles</span>
+      <span><i class="sw" style="box-shadow:inset 0 0 0 2px var(--pred)"></i>Règles prévues</span>
+      <span><i class="sw" style="background:var(--fertile-soft)"></i>Période fertile</span>
+      <span><i class="sw" style="background:var(--fertile)"></i>Ovulation</span>
+    </div>
+    <p class="note-small">Touche un jour pour noter tes règles, ton humeur, tes symptômes, ta température et le reste.</p>
+  </section>
+
+  <section class="view" id="v-ai">
+    <h2 class="vt">Lune IA</h2>
+    <p class="ai-intro">Pose tes questions sur ton cycle. L'IA voit tes données notées dans l'appli pour te répondre.</p>
+    <div id="aiOff" class="ai-off" hidden></div>
+    <div class="sugg" id="sugg"></div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="composer" id="composer">
+      <textarea id="aiIn" rows="1" placeholder="Écris ta question…" aria-label="Ta question"></textarea>
+      <button class="send" id="aiSend" aria-label="Envoyer">↑</button>
+    </div>
+    <div class="ai-tools"><button class="link" id="aiStop" hidden>Arrêter</button><span></span><button class="link" id="aiNew">Nouvelle conversation</button></div>
+    <p class="note-small">Lune IA donne des infos générales, pas un diagnostic. Pour toute inquiétude, consulte un·e professionnel·le de santé.</p>
+  </section>
+
+  <section class="view" id="v-stats"></section>
+
+  <section class="view" id="v-share"></section>
+
+  <section class="view" id="v-set">
+    <h2 class="vt">Réglages</h2>
+    <div id="profileBox"></div>
+    <div class="set">
+      <div class="row2">
+        <div><label class="field" for="sCycle">Durée du cycle</label><input type="number" id="sCycle" min="18" max="60"></div>
+        <div><label class="field" for="sPeriod">Durée des règles</label><input type="number" id="sPeriod" min="1" max="12"></div>
+      </div>
+      <p>En jours. Utilisé tant que l'appli n'a pas assez d'historique. Ensuite, elle calcule tes moyennes toute seule.</p>
+    </div>
+    <div class="set">
+      <div class="sec-t">Tes données</div>
+      <p style="margin-top:0">Ton suivi reste sur cet appareil. Quand tu utilises Lune IA, tes données de cycle sont envoyées à l'IA pour qu'elle te réponde.</p>
+      <button class="danger" id="reset">Effacer toutes mes données</button>
+    </div>
+    <p class="note-small">Les prédictions sont des estimations basées sur tes cycles passés. Elles ne remplacent pas un avis médical et ne doivent pas servir de méthode de contraception. En cas de douleurs fortes ou de cycles très irréguliers, parles-en à un·e professionnel·le de santé.</p>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Navigation">
+  <div class="tabs-in">
+    <button class="tab" data-v="today" aria-current="page"><span class="ic">🌙</span>Aujourd'hui</button>
+    <button class="tab" data-v="cal"><span class="ic">📅</span>Calendrier</button>
+    <button class="tab" data-v="ai"><span class="ic">✨</span>Lune IA</button>
+    <button class="tab" data-v="stats"><span class="ic">📊</span>Analyses</button>
+    <button class="tab" data-v="share"><span class="ic">💞</span>Partage</button>
+  </div>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div class="sheet-in" id="sheetIn"></div></div>
+
+<script>
+const STANDALONE=!window.claude;if(STANDALONE)document.body.classList.add('standalone');
+const KEY='lune-v1',CHAT_KEY='lune-chat-v1';
+const DEF=()=>({cycle:28,period:5,profile:{conditions:[]},share:{on:false,phase:true,mood:true,symptoms:false,pain:false,name:'',msg:''}});
+let state={days:{},settings:DEF()};
+function load(){try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);state={days:p.days||{},settings:Object.assign(DEF(),p.settings||{})};
+  Object.values(state.days).forEach(d=>{if(d.mood&&!d.moods){d.moods=[d.mood]}delete d.mood});
+  const st=state.settings;st.profile=st.profile||{};st.share=Object.assign(DEF().share,st.share||{});st.profile.conditions=st.profile.conditions||[];
+  if(st.pill&&!st.profile.contraception)st.profile.contraception='pilule_comb';delete st.pill}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+const pad=n=>String(n).padStart(2,'0');
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d,12)};
+const add=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)};
+const diff=(a,b)=>Math.round((pd(b)-pd(a))/864e5);
+const today=()=>ds(new Date());
+const fmt=(s,o)=>pd(s).toLocaleDateString('fr-FR',o);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plural=(n,w)=>n+' '+w+(Math.abs(n)>1?'s':'');
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+
+const SYMPTOMS=['Crampes','Maux de tête','Migraine','Ballonnements','Seins sensibles','Fatigue','Acné','Mal de dos','Nausées','Fringales','Insomnie','Vertiges','Diarrhée','Constipation','Douleur pelvienne','Bouffées de chaleur'];
+const MOODS=[['bien','😊 Bien'],['calme','😌 Calme'],['energie','💪 Énergique'],['sensible','🥺 Sensible'],['triste','😢 Triste'],['irritable','😠 Irritable'],['anxieuse','😰 Anxieuse'],['stressee','😣 Stressée'],['fatiguee','🥱 Fatiguée'],['sautes','🎢 Sautes d\u2019humeur']];
+const FLOWS=[['spotting','Spotting'],['leger','Léger'],['moyen','Moyen'],['abondant','Abondant']];
+const SINGLES={
+  discharge:{t:'Pertes',o:[['aucune','Aucune'],['seches','Sèches'],['collantes','Collantes'],['cremeuses','Crémeuses'],['oeuf','Blanc d\u2019œuf'],['aqueuses','Aqueuses'],['inhab','Inhabituelles']]},
+  libido:{t:'Libido',o:[['basse','Basse'],['normale','Normale'],['haute','Élevée']]},
+  sex:{t:'Rapport',o:[['non','Aucun'],['protege','Protégé'],['nonprotege','Non protégé']]},
+  ovTest:{t:'Test d\u2019ovulation',o:[['neg','Négatif'],['pos','Positif']]},
+  pregTest:{t:'Test de grossesse',o:[['neg','Négatif'],['pos','Positif']]}
+};
+const CONTRA=[['aucune','Aucune'],['preservatif','Préservatif'],['pilule_comb','Pilule combinée'],['pilule_prog','Pilule progestative'],['sterilet_h','Stérilet hormonal'],['sterilet_cu','Stérilet cuivre'],['implant','Implant'],['anneau','Anneau ou patch'],['autre','Autre']];
+const HORMONAL=['pilule_comb','pilule_prog','sterilet_h','implant','anneau'];
+const GOALS=[['suivre','Suivre mon cycle'],['eviter','Éviter une grossesse'],['bebe','Avoir un bébé']];
+const CONDS=['Endométriose','SOPK','Adénomyose','Fibromes','Thyroïde','Diabète','Anémie','Allaitement','Post-partum','Arrêt récent de contraception','Préménopause'];
+const IRREG=['SOPK','Allaitement','Post-partum','Arrêt récent de contraception','Préménopause','Thyroïde'];
+const LIFE=['Alcool','Caféine','Sport intense','Stress','Voyage','Malade','Mal dormi'];
+const prof=()=>state.settings.profile;
+const onPill=()=>['pilule_comb','pilule_prog'].includes(prof().contraception);
+const optLab=(o,v)=>(o.find(x=>x[0]===v)||[,''])[1];
+function latestWeight(){const k=Object.keys(state.days).filter(d=>state.days[d].weight).sort();return k.length?state.days[k[k.length-1]].weight:(prof().weight||'')}
+function irregular(m){const cs=m.cycles.slice(-6);return (prof().conditions||[]).some(c=>IRREG.includes(c))||m.cycles.length<2||(cs.length>1&&Math.max(...cs)-Math.min(...cs)>7)}
+const lab=(k,v)=>(k==='flow'?FLOWS:k==='mood'?MOODS:SINGLES[k].o).find(x=>x[0]===v)?.[1]||v;
+
+function periods(){
+  const list=Object.keys(state.days).filter(k=>state.days[k].period).sort();
+  const res=[];
+  for(const d of list){const l=res[res.length-1];if(l&&diff(l.end,d)<=2)l.end=d;else res.push({start:d,end:d})}
+  return res;
+}
+function model(){
+  const ps=periods(),s=state.settings;
+  const cycles=[];
+  for(let i=1;i<ps.length;i++){const c=diff(ps[i-1].start,ps[i].start);if(c>=15&&c<=60)cycles.push(c)}
+  const rc=cycles.slice(-6);
+  const avgCycle=rc.length?Math.round(avg(rc)):+s.cycle;
+  const lens=ps.slice(-6).map(p=>diff(p.start,p.end)+1);
+  const avgLen=lens.length?Math.max(1,Math.round(avg(lens))):+s.period;
+  return{ps,cycles,avgCycle,avgLen,last:ps[ps.length-1]||null};
+}
+function classify(x,m,t){
+  const d=state.days[x];
+  if(d&&d.period)return'period';
+  if(!m.last)return'';
+  if(x>=t){for(let k=1;k<=6;k++){const st=add(m.last.start,m.avgCycle*k);if(x>=st&&x<add(st,m.avgLen))return'pred'}}
+  if(x>m.last.end){for(let k=0;k<=6;k++){const cs=add(m.last.start,m.avgCycle*k);const ov=add(cs,m.avgCycle-14);
+    if(x===ov)return'ov';if(x>=add(ov,-5)&&x<=add(ov,1))return'fertile'}}
+  return'';
+}
+function cycleInfo(){
+  const m=model(),t=today();if(!m.last)return null;
+  const cday=diff(m.last.start,t)+1,N=m.avgCycle,ovDay=N-14+1;
+  let phase;
+  if(state.days[t]?.period||t<=m.last.end)phase='regles';
+  else if(cday>N)phase='retard';
+  else if(cday===ovDay)phase='ovulation';
+  else if(cday>=ovDay-5&&cday<=ovDay+1)phase='fertile';
+  else if(cday<ovDay-5)phase='folliculaire';
+  else phase='luteale';
+  const next=add(m.last.start,N);
+  return{m,t,cday,N,ovDay,phase,next,until:diff(t,next)};
+}
+
+const PHASES={
+  regles:{t:'Règles',c:'var(--period)',bg:'var(--period-soft)',p:"Prends soin de toi. Une bouillotte, de l'eau et du repos peuvent aider si tu as des crampes."},
+  folliculaire:{t:'Phase folliculaire',c:'var(--accent)',bg:'var(--accent-soft)',p:"L'énergie revient souvent pendant ces jours-là. Bon moment pour les projets et le sport si tu en as envie."},
+  fertile:{t:'Période fertile',c:'var(--fertile)',bg:'var(--fertile-soft)',p:"Période fertile estimée. C'est une prédiction, pas une certitude."},
+  ovulation:{t:'Ovulation estimée',c:'var(--ov)',bg:'var(--fertile-soft)',p:"Jour d'ovulation estimé selon tes cycles passés."},
+  luteale:{t:'Phase lutéale',c:'var(--accent)',bg:'var(--accent-soft)',p:"Fatigue, fringales ou humeur changeante avant les règles, c'est fréquent. Sois douce avec toi-même."},
+  retard:{t:'Règles en retard',c:'var(--period)',bg:'var(--period-soft)',p:"Un retard de quelques jours peut arriver (stress, sommeil, voyage). Si ça dure ou t'inquiète, demande conseil."}
+};
+
+function summarize(d){
+  if(!d)return[];const b=[];
+  if(d.period)b.push('règles'+(d.flow?' ('+lab('flow',d.flow).toLowerCase()+')':''));
+  if(d.moods?.length)b.push(d.moods.map(x=>lab('mood',x)).join(', '));
+  if(d.symptoms?.length)b.push(d.symptoms.join(', ').toLowerCase());
+  if(d.pain!=null&&d.pain!=='')b.push('douleur '+d.pain+'/10');
+  if(d.life?.length)b.push(d.life.join(', ').toLowerCase());
+  for(const k in SINGLES)if(d[k])b.push(SINGLES[k].t.toLowerCase()+' : '+lab(k,d[k]).toLowerCase());
+  if(d.temp)b.push(d.temp+' °C');
+  if(d.weight)b.push(d.weight+' kg');
+  if(d.sleep)b.push(d.sleep+' h de sommeil');
+  if(d.water)b.push(plural(d.water,'verre')+' d\u2019eau');
+  if(d.pill)b.push('pilule prise');
+  if(d.note)b.push('note : '+d.note);
+  return b;
+}
+const isEmpty=x=>Object.keys(x).length===0;
+function setDay(date,x){if(isEmpty(x))delete state.days[date];else state.days[date]=x;save()}
+
+function arcPath(cx,cy,r,a0,a1){
+  const p=a=>{const rad=(a-90)*Math.PI/180;return[cx+r*Math.cos(rad),cy+r*Math.sin(rad)]};
+  const[x0,y0]=p(a0),[x1,y1]=p(a1);
+  return`M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+}
+
+let tipCache={};
+function confNote(ci){
+  const p=prof();
+  if(HORMONAL.includes(p.contraception))return`<div class="conf">Avec une contraception hormonale, les jours fertiles affichés sont seulement indicatifs.</div>`;
+  const r=[];const cs=ci.m.cycles.slice(-6);
+  if((p.conditions||[]).some(c=>IRREG.includes(c)))r.push('selon ton profil');
+  if(cs.length>1&&Math.max(...cs)-Math.min(...cs)>7)r.push('tes cycles varient');
+  if(ci.m.cycles.length<2)r.push('encore peu d\u2019historique');
+  return r.length?`<div class="conf">Prévisions moins fiables : ${r.join(', ')}.</div>`:'';
+}
+function painAlert(){let n=0;model().ps.slice(-3).forEach(p=>{for(let d=p.start;d<=p.end;d=add(d,1)){if((+state.days[d]?.pain||0)>=7){n++;break}}});return n>=2}
+function renderToday(){
+  const el=document.getElementById('v-today');const t=today();const ci=cycleInfo();
+  if(!ci){
+    el.innerHTML=`<div class="onb"><div class="moon">🌙</div><h1>Bienvenue sur Lune</h1>
+      <p>Pour commencer, indique le premier jour de tes dernières règles. L'appli s'occupe du reste.</p>
+      <label class="field" for="firstDay">Premier jour des dernières règles</label>
+      <input type="date" id="firstDay" max="${t}" value="${t}">
+      <button class="btn wide" id="startBtn" style="margin-top:14px">Commencer</button>
+      ${partnerDocs().length?'<button class="link" id="goShare" style="margin-top:18px">💞 Voir le cycle partagé avec toi</button>':'<p class="needs-claude" style="margin-top:18px;font-size:14px">Tu es le ou la partenaire ? Va dans l\u2019onglet Partage.</p>'}</div>`;
+    const gs=document.getElementById('goShare');if(gs)gs.onclick=()=>show('share');
+    document.getElementById('startBtn').onclick=()=>{
+      const v=document.getElementById('firstDay').value;if(!v||v>t)return;
+      for(let i=0;i<+state.settings.period;i++){const d=add(v,i);if(d>t)break;state.days[d]=Object.assign(state.days[d]||{},{period:true,flow:state.days[d]?.flow||'moyen'})}
+      save();renderAll();
+    };
+    return;
+  }
+  const{m,cday,N,ovDay,phase,until}=ci;
+  let main;
+  if(phase==='regles')main=`Règles, ${plural(diff(m.last.start,t)+1,'jour')}`;
+  else if(until>0)main=`Règles dans ${plural(until,'jour')}`;
+  else if(until===0)main=`Règles prévues aujourd'hui`;
+  else main=`En retard de ${plural(-until,'jour')}`;
+  const curLen=t<=m.last.end?diff(m.last.start,m.last.end)+1:0;
+  const lenP=Math.max(m.avgLen,curLen);
+  let segs='';const gap=2.2,R=120;
+  for(let i=1;i<=N;i++){
+    let col='var(--neutral)';
+    if(i<=lenP)col='var(--period)';
+    else if(i===ovDay)col='var(--ov)';
+    else if(i>=ovDay-5&&i<=ovDay+1)col='var(--fertile)';
+    const op=i<=Math.min(cday,N)?1:.38;
+    segs+=`<path d="${arcPath(150,150,R,(i-1)/N*360+gap/2,i/N*360-gap/2)}" stroke="${col}" stroke-width="18" fill="none" opacity="${op}"/>`;
+  }
+  const mr=((Math.min(cday,N)-.5)/N*360-90)*Math.PI/180;
+  segs+=`<circle cx="${(150+R*Math.cos(mr)).toFixed(2)}" cy="${(150+R*Math.sin(mr)).toFixed(2)}" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>`;
+  const P=PHASES[phase];const d=state.days[t]||{};const bits=summarize(d);
+  const water=d.water||0;const tk=t+phase;
+  el.innerHTML=`<div class="ring-wrap"><svg viewBox="0 0 300 300" role="img" aria-label="Jour ${cday} du cycle">${segs}</svg>
+    <div class="ring-center"><div class="ring-sub">Jour du cycle</div><div class="ring-day">${cday}</div><div class="ring-main">${main}</div></div></div>${confNote(ci)}
+    <div class="card"><span class="pill" style="background:${P.bg};color:${P.c}">${P.t}</span><p>${P.p}</p>
+      <div class="tip" id="tipBox">${tipCache[tk]?`<div class="tip-out">${esc(tipCache[tk])}</div>`:`<button class="link" id="tipBtn">✨ Mon conseil personnalisé du jour</button>`}</div></div>
+    <div class="actions">
+      <button class="btn ghost" id="logToday">Noter ma journée</button>
+      <button class="btn period" id="periodToday">${d.period?'Retirer les règles':'Règles aujourd\u2019hui'}</button>
+    </div>
+    <div class="card water"><div><b>Eau</b><div class="drops" aria-hidden="true">${'💧'.repeat(Math.min(water,8))||'<span style="color:var(--muted);font-size:14px;letter-spacing:0">Aucun verre</span>'}</div></div>
+      <div class="stepper"><button class="rnd" id="wMinus" aria-label="Retirer un verre">−</button><b>${water}</b><button class="rnd" id="wPlus" aria-label="Ajouter un verre">+</button></div></div>
+    ${onPill()?`<div class="card" style="padding:4px"><button class="toggle acc" id="pillToday" aria-pressed="${!!d.pill}" style="border:none">Pilule prise aujourd'hui<span class="sw2"></span></button></div>`:''}
+    ${painAlert()?`<div class="card alert"><b>Des règles très douloureuses</b><p style="margin-top:4px">Tes dernières règles ont été très douloureuses. Des douleurs fortes pendant les règles ne sont pas une fatalité : parles-en à un médecin ou une sage-femme. Le résumé pour le médecin, dans Analyses, peut t\u2019aider.</p></div>`:''}
+    <div class="card"><b>Risque de grossesse ?</b><p style="margin-top:4px">Après un rapport, réponds à quelques questions pour estimer le risque et savoir quoi faire.</p><button class="btn wide" id="pregBtn" style="margin-top:12px">Faire le questionnaire</button></div>
+    <div class="logged">${bits.length?'Aujourd\u2019hui : <b>'+esc(bits.join(', '))+'</b>':'Rien de noté aujourd\u2019hui.'}</div>`;
+  document.getElementById('logToday').onclick=()=>openSheet(t);
+  document.getElementById('periodToday').onclick=()=>{const x={...(state.days[t]||{})};x.period=!x.period;if(x.period)x.flow=x.flow||'moyen';else{delete x.period;delete x.flow}setDay(t,x);renderAll()};
+  const setW=n=>{const x={...(state.days[t]||{})};if(n>0)x.water=n;else delete x.water;setDay(t,x);renderAll()};
+  document.getElementById('wPlus').onclick=()=>setW(water+1);
+  document.getElementById('wMinus').onclick=()=>setW(Math.max(0,water-1));
+  const pt=document.getElementById('pillToday');if(pt)pt.onclick=()=>{const x={...(state.days[t]||{})};if(x.pill)delete x.pill;else x.pill=true;setDay(t,x);renderAll()};
+  document.getElementById('pregBtn').onclick=openPreg;
+  const tb=document.getElementById('tipBtn');if(tb)tb.onclick=()=>getTip(tk);
+}
+
+let viewMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1,12)})();
+function renderCal(){
+  const m=model(),t=today();
+  document.getElementById('monthT').textContent=viewMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  const offset=(viewMonth.getDay()+6)%7;
+  const start=new Date(viewMonth);start.setDate(1-offset);
+  let h=['L','M','M','J','V','S','D'].map(w=>`<div class="wd">${w}</div>`).join('');
+  for(let i=0;i<42;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);const s=ds(d);
+    if(i>=35&&d.getMonth()!==viewMonth.getMonth())break;
+    const c=classify(s,m,t);const log=state.days[s];
+    const has=log&&Object.keys(log).some(k=>k!=='period'&&k!=='flow');
+    const cls=['cell',c,s===t?'today':'',d.getMonth()!==viewMonth.getMonth()?'other':''].join(' ');
+    h+=`<button class="${cls}" data-d="${s}" aria-label="${fmt(s,{weekday:'long',day:'numeric',month:'long'})}">${d.getDate()}${has?'<span class="dot"></span>':''}</button>`;
+  }
+  const g=document.getElementById('grid');g.innerHTML=h;
+  g.querySelectorAll('.cell').forEach(b=>b.onclick=()=>openSheet(b.dataset.d));
+}
+
+function renderStats(){
+  const el=document.getElementById('v-stats');const m=model();const t=today();
+  const sc={},mc={};Object.values(state.days).forEach(d=>{(d.symptoms||[]).forEach(s=>sc[s]=(sc[s]||0)+1);(d.moods||[]).forEach(s=>mc[s]=(mc[s]||0)+1)});
+  const topS=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const topM=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const last7=[...Array(7)].map((_,i)=>state.days[add(t,-i)]||{});
+  const sl=avg(last7.map(d=>+d.sleep).filter(Boolean)),wa=avg(last7.map(d=>+d.water).filter(Boolean));
+  const variation=m.cycles.length>1?Math.max(...m.cycles.slice(-6))-Math.min(...m.cycles.slice(-6)):null;
+  let hist='';const ps=[...m.ps].reverse();
+  ps.forEach((p,i)=>{const len=diff(p.start,p.end)+1;const prev=ps[i+1];const cyc=prev?diff(prev.start,p.start):null;
+    hist+=`<li><span>${fmt(p.start,{day:'numeric',month:'short',year:'numeric'})}</span><span class="m">${plural(len,'jour')} de règles${cyc?'<br>cycle de '+cyc+' jours':''}</span></li>`});
+  // température
+  const temps=[];for(let i=59;i>=0;i--){const s=add(t,-i);const v=parseFloat(state.days[s]?.temp);if(v)temps.push([59-i,v,s])}
+  let chart='<p class="empty">Note ta température au réveil pendant plusieurs jours pour voir ta courbe ici. Elle remonte souvent légèrement après l\u2019ovulation.</p>';
+  if(temps.length>=2){
+    const vs=temps.map(x=>x[1]);let lo=Math.min(...vs)-.1,hi=Math.max(...vs)+.1;
+    const X=i=>10+i/59*300,Y=v=>110-(v-lo)/(hi-lo)*95;
+    const pts=temps.map(([i,v])=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+    chart=`<div class="chart"><svg viewBox="0 0 320 130" role="img" aria-label="Courbe de température des 60 derniers jours">
+      <text x="10" y="12" font-size="10" fill="var(--muted)">${hi.toFixed(2)} °C</text><text x="10" y="126" font-size="10" fill="var(--muted)">${lo.toFixed(2)} °C</text>
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+      ${temps.map(([i,v])=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="2.6" fill="var(--accent)"/>`).join('')}</svg></div>`;
+  }
+  const ins=insights();
+  el.innerHTML=`<h2 class="vt">Analyses</h2>
+    <h3>Tes tendances</h3>
+    ${ins.length?'<ul class="ins">'+ins.map(i=>`<li><span class="e">${i.e}</span><span>${i.h}</span></li>`).join('')+'</ul><button class="btn ghost wide" id="insAI" style="margin-top:12px">✨ Demander à Lune IA d\u2019analyser mes tendances</button>':'<p class="empty">Continue à noter tes règles, ton humeur et tes symptômes : tes tendances apparaissent ici après un ou deux cycles.</p>'}
+    <div class="stats">
+      <div class="stat"><div class="n">${m.avgCycle}</div><div class="l">jours de cycle en moyenne</div></div>
+      <div class="stat"><div class="n">${m.avgLen}</div><div class="l">jours de règles en moyenne</div></div>
+      <div class="stat"><div class="n">${variation===null?'–':variation}</div><div class="l">jours d'écart entre tes cycles</div></div>
+      <div class="stat"><div class="n">${m.ps.length}</div><div class="l">règles notées</div></div>
+      <div class="stat"><div class="n">${sl?sl.toFixed(1):'–'}</div><div class="l">h de sommeil (7 jours)</div></div>
+      <div class="stat"><div class="n">${wa?wa.toFixed(1):'–'}</div><div class="l">verres d'eau par jour</div></div>
+      <div class="stat full"><div class="l" style="margin:0">${m.cycles.length?'Moyennes calculées sur tes derniers cycles. Un écart de quelques jours d\u2019un cycle à l\u2019autre est courant.':'Valeurs par défaut pour l\u2019instant. Les moyennes se calculent dès que tu as noté deux règles.'}</div></div>
+    </div>
+    <h3>Résumé pour le médecin</h3>
+    <p class="empty" style="margin:-4px 0 10px">À montrer lors d\u2019un rendez-vous, par exemple pour parler de douleurs ou de cycles irréguliers.</p>
+    <div class="summary" id="docSum">${esc(docSummary())}</div>
+    <div class="actions"><button class="btn ghost" id="copySum">Copier</button><button class="btn" id="dlSum" ${dl?'':'hidden'}>Télécharger</button></div>
+    <h3>Température au réveil</h3>${chart}
+    <h3>Symptômes fréquents</h3>
+    ${topS.length?'<ul class="hist">'+topS.map(([s,n])=>`<li><span>${esc(s)}</span><span class="m">${plural(n,'jour')}</span></li>`).join('')+'</ul>':'<p class="empty">Note tes symptômes pour les voir ici.</p>'}
+    <h3>Humeurs fréquentes</h3>
+    ${topM.length?'<ul class="hist">'+topM.map(([s,n])=>`<li><span>${esc(lab('mood',s))}</span><span class="m">${plural(n,'jour')}</span></li>`).join('')+'</ul>':'<p class="empty">Note ton humeur pour la voir ici.</p>'}
+    <h3>Règles passées</h3>
+    ${hist?'<ul class="hist">'+hist+'</ul>':'<p class="empty">Aucune règle notée pour l\u2019instant.</p>'}`;
+  const ia=document.getElementById('insAI');if(ia)ia.onclick=()=>{show('ai');ask('Analyse mes tendances et donne-moi 2 ou 3 conseils adaptés : \n'+insights().map(i=>'- '+i.t).join('\n'))};
+  document.getElementById('copySum').onclick=async e=>{try{await navigator.clipboard.writeText(docSummary());e.target.textContent='Copié'}catch(err){const r=document.createRange();r.selectNodeContents(document.getElementById('docSum'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);e.target.textContent='Texte sélectionné'}};
+  document.getElementById('dlSum').onclick=async e=>{if(!dl)return;try{await dl.save({filename:'resume-cycle-'+today()+'.txt',data:docSummary()});e.target.textContent='Téléchargé'}catch(err){if(err&&err.code==='unavailable'){dl=null;e.target.hidden=true}}};
+}
+const PH_TXT={regles:'pendant tes règles',folliculaire:'en phase folliculaire',fertile:'pendant ta période fertile',luteale:'en phase lutéale, avant tes règles'};
+const NEG=['triste','irritable','anxieuse','stressee','fatiguee','sautes'];
+function phaseOf(date,m){
+  let cs=null;for(const p of m.ps){if(p.start<=date)cs=p}
+  if(!cs)return null;
+  const nxt=m.ps.find(p=>p.start>date);const len=nxt?diff(cs.start,nxt.start):m.avgCycle;
+  const day=diff(cs.start,date)+1,toNext=nxt?diff(date,nxt.start):null;
+  if(date<=cs.end||state.days[date]?.period)return{ph:'regles',day,toNext};
+  if(day>len)return null;
+  const ov=len-14+1;
+  if(day>=ov-5&&day<=ov+1)return{ph:'fertile',day,toNext};
+  return{ph:day<ov-5?'folliculaire':'luteale',day,toNext};
+}
+function insights(){
+  const m=model(),out=[];const items={};
+  const addItem=(key,label,date)=>{(items[key]=items[key]||{label,dates:[]}).dates.push(date)};
+  for(const [date,d] of Object.entries(state.days)){
+    (d.symptoms||[]).forEach(s=>addItem('s:'+s,s,date));
+    (d.moods||[]).forEach(x=>addItem('m:'+x,lab('mood',x),date));
+    if(+d.pain>=5)addItem('pain','Douleur forte (5/10 ou plus)',date);
+  }
+  const ranked=[];
+  for(const [k,it] of Object.entries(items)){
+    if(it.dates.length<3)continue;
+    const ph={},pms=new Set();let known=0;
+    it.dates.forEach(d=>{const f=phaseOf(d,m);if(!f)return;known++;ph[f.ph]=(ph[f.ph]||0)+1;if(f.toNext!=null&&f.toNext>=1&&f.toNext<=5)pms.add(f.toNext+':'+m.ps.findIndex(p=>p.start>d))});
+    const cyclesPms=new Set([...pms].map(x=>x.split(':')[1])).size;
+    if(cyclesPms>=2&&!k.startsWith('m:bien')&&!k.startsWith('m:calme')&&!k.startsWith('m:energie')){
+      ranked.push({w:cyclesPms*2,e:'🔁',t:`${it.label} revient souvent dans les 5 jours avant tes règles (${cyclesPms} cycles).`});continue}
+    const top=Object.entries(ph).sort((a,b)=>b[1]-a[1])[0];
+    if(top&&known>=3&&top[1]>=3&&top[1]/known>=.5)ranked.push({w:top[1],e:k.startsWith('m:')?'💭':'📍',t:`${it.label} : surtout ${PH_TXT[top[0]]} (${top[1]} fois sur ${known}).`});
+  }
+  ranked.sort((a,b)=>b.w-a.w).slice(0,5).forEach(x=>out.push(x));
+  // sommeil et humeur
+  const days=Object.values(state.days).filter(d=>d.sleep&&d.moods?.length);
+  const lo=days.filter(d=>d.sleep<6.5),hi=days.filter(d=>d.sleep>=6.5);
+  if(lo.length>=4&&hi.length>=4){const r=a=>a.filter(d=>d.moods.some(x=>NEG.includes(x))).length/a.length;const a=r(lo),b=r(hi);
+    if(a-b>=.25)out.push({e:'😴',t:`Quand tu dors moins de 6 h 30, tu notes plus souvent une humeur difficile (${Math.round(a*100)} % des jours, contre ${Math.round(b*100)} %).`})}
+  // mode de vie et douleur/humeur
+  LIFE.forEach(L=>{const ds=Object.keys(state.days).filter(d=>state.days[d].life?.includes(L));if(ds.length<3)return;
+    const bad=d=>{const x=state.days[d]||{};return +x.pain>=5||(x.moods||[]).some(y=>NEG.includes(y))};
+    const withL=ds.filter(d=>bad(d)||bad(add(d,1))).length/ds.length;
+    const others=Object.keys(state.days).filter(d=>!ds.includes(d)&&!ds.includes(add(d,-1)));if(others.length<5)return;
+    const base=others.filter(bad).length/others.length;
+    if(withL-base>=.25)out.push({e:'🔎',t:`Après « ${L} », tu notes plus souvent de la douleur ou une humeur difficile (${Math.round(withL*100)} % contre ${Math.round(base*100)} %).`})});
+  // régularité
+  const cs=m.cycles.slice(-4);
+  if(cs.length>=2){const r=Math.max(...cs)-Math.min(...cs);
+    out.push({e:'📆',t:`Tes derniers cycles : ${cs.join(', ')} jours. `+(r<=3?'Ils sont très réguliers.':r<=7?'Ils varient un peu, c\u2019est courant.':'Ils varient beaucoup, les prévisions sont donc moins sûres.')})}
+  const lens=m.ps.slice(-4).map(p=>diff(p.start,p.end)+1);
+  if(lens.length>=3){const last=lens[lens.length-1],prev=avg(lens.slice(0,-1));if(Math.abs(last-prev)>=2)out.push({e:'🩸',t:`Tes dernières règles ont duré ${last} jours, contre ${prev.toFixed(1)} en moyenne avant.`})}
+  return out.map(o=>({...o,h:esc(o.t).replace(/^([^:]+) (revient|:)/,'<b>$1</b> $2')}));
+}
+function docSummary(){
+  const m=model(),p=prof(),t=today(),L=[];
+  L.push('Résumé de suivi du cycle (application Lune)','Généré le '+fmt(t,{day:'numeric',month:'long',year:'numeric'}),'');
+  if(p.age)L.push('Âge : '+p.age+' ans');if(p.height)L.push('Taille : '+p.height+' cm');const w=latestWeight();if(w)L.push('Poids : '+w+' kg');
+  if(p.contraception)L.push('Contraception : '+optLab(CONTRA,p.contraception));
+  const cond=[...(p.conditions||[]),p.other].filter(Boolean);if(cond.length)L.push('Antécédents indiqués : '+cond.join(', '));
+  if(L.length>3)L.push('');
+  const cs=m.cycles.slice(-6);
+  L.push('Cycle moyen : '+m.avgCycle+' jours'+(cs.length?` (de ${Math.min(...cs)} à ${Math.max(...cs)} jours, sur ${cs.length} cycle${cs.length>1?'s':''})`:' (pas encore assez de données)'));
+  L.push('Durée moyenne des règles : '+m.avgLen+' jours');
+  const pains=[];m.ps.forEach(pp=>{for(let d=pp.start;d<=pp.end;d=add(d,1)){const v=state.days[d]?.pain;if(v!=null&&v!=='')pains.push(+v)}});
+  if(pains.length)L.push(`Douleur pendant les règles : ${avg(pains).toFixed(1)}/10 en moyenne, maximum ${Math.max(...pains)}/10`);
+  if(m.ps.length){L.push('','Dernières règles :');
+    m.ps.slice(-6).reverse().forEach(pp=>{let heavy=0,pm=null;for(let d=pp.start;d<=pp.end;d=add(d,1)){const x=state.days[d]||{};if(x.flow==='abondant')heavy++;if(x.pain!=null&&x.pain!=='')pm=Math.max(pm??0,+x.pain)}
+      L.push(`- ${fmt(pp.start,{day:'numeric',month:'short',year:'numeric'})} : ${diff(pp.start,pp.end)+1} jours${heavy?`, ${heavy} j de flux abondant`:''}${pm!=null?`, douleur max ${pm}/10`:''}`)})}
+  const sc={};Object.values(state.days).forEach(d=>(d.symptoms||[]).forEach(x=>sc[x]=(sc[x]||0)+1));
+  const top=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(top.length)L.push('','Symptômes les plus notés : '+top.map(([x,n])=>`${x} (${n} j)`).join(', '));
+  L.push('','Données saisies par la patiente, à titre indicatif.');
+  return L.join('\n');
+}
+
+/* profil */
+function pchips(k,opts,multi){const p=prof();return`<div class="chips">${opts.map(([v,l])=>`<button class="chip" data-pk="${k}" data-v="${esc(v)}" data-m="${multi?1:0}" aria-pressed="${multi?(p[k]||[]).includes(v):p[k]===v}">${esc(l)}</button>`).join('')}</div>`}
+function renderProfile(){
+  const p=prof();const box=document.getElementById('profileBox');
+  box.innerHTML=`<div class="set"><div class="sec-t">Mon profil</div><p style="margin:0 0 12px">Aide l\u2019appli et Lune IA à mieux te comprendre. Tout est facultatif.</p>
+    <div class="row3"><div><label class="field" for="pAge">Âge</label><input type="number" id="pAge" min="8" max="70" value="${p.age||''}"></div>
+    <div><label class="field" for="pH">Taille (cm)</label><input type="number" id="pH" min="100" max="220" value="${p.height||''}"></div>
+    <div><label class="field" for="pW">Poids (kg)</label><input type="number" id="pW" step="0.1" min="20" max="300" value="${p.weight||''}"></div></div>
+    <div class="sec-t" style="margin-top:16px">Mon objectif</div>${pchips('goal',GOALS,false)}
+    <div class="sec-t" style="margin-top:16px">Ma contraception</div>${pchips('contraception',CONTRA,false)}
+    <div class="sec-t" style="margin-top:16px">Ma santé</div>${pchips('conditions',CONDS.map(c=>[c,c]),true)}
+    <label class="field" for="pOther" style="margin-top:14px">Autre (maladie, traitement…)</label><input type="text" id="pOther" maxlength="120" value="${esc(p.other||'')}">
+    </div>`;
+  const upd=()=>{save();renderToday();renderStats()};
+  [['pAge','age'],['pH','height'],['pW','weight']].forEach(([id,k])=>document.getElementById(id).onchange=e=>{const v=parseFloat(e.target.value);if(v)p[k]=v;else delete p[k];upd()});
+  document.getElementById('pOther').onchange=e=>{p.other=e.target.value.trim();upd()};
+  box.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const k=b.dataset.pk,v=b.dataset.v;
+    if(b.dataset.m==='1'){p[k]=p[k]||[];const i=p[k].indexOf(v);if(i>=0)p[k].splice(i,1);else p[k].push(v);b.setAttribute('aria-pressed',i<0)}
+    else{p[k]=p[k]===v?'':v;box.querySelectorAll(`[data-pk="${k}"]`).forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===p[k]))}
+    upd()});
+}
+
+/* questionnaire grossesse */
+const PCONTRA=[['aucune','Aucune'],['retrait','Retrait'],['preserv_ok','Préservatif bien utilisé'],['preserv_ko','Préservatif craqué ou glissé'],['pilule_ok','Pilule bien prise'],['pilule_ko','Pilule oubliée ou vomie'],['sterilet','Stérilet'],['implant','Implant'],['anneau_ok','Anneau ou patch bien utilisé'],['nsp','Je ne sais pas']];
+const RELIABLE=['preserv_ok','pilule_ok','sterilet','implant','anneau_ok'];
+const PEC=[['non','Non'],['pilule','Pilule du lendemain'],['cu','Stérilet au cuivre']];
+const PTEST=[['pas','Pas encore'],['neg','Négatif'],['pos','Positif']];
+const PSIGNS=['Règles en retard','Nausées','Seins sensibles','Fatigue inhabituelle','Petits saignements'];
+let pq=null;
+function openPreg(){pq={date:today(),contra:'',ec:'non',test:'pas',signs:[],save:true,res:null,err:''};drawPreg();showSheet()}
+function qchips(k,opts,multi){return`<div class="chips">${opts.map(([v,l])=>`<button class="chip" data-qk="${k}" data-v="${esc(v)}" data-m="${multi?1:0}" aria-pressed="${multi?pq[k].includes(v):pq[k]===v}">${esc(l)}</button>`).join('')}</div>`}
+function drawPreg(){
+  const el=document.getElementById('sheetIn');const t=today();
+  if(pq.res){el.innerHTML=`<div class="grab"></div>`+pregResultHTML();
+    document.getElementById('pqAgain').onclick=()=>{pq.res=null;drawPreg();document.getElementById('sheet').scrollTop=0};
+    document.getElementById('pqClose').onclick=closeSheet;return}
+  el.innerHTML=`<div class="grab"></div><h2 id="sheetT" style="text-transform:none">Risque de grossesse</h2>
+    <p class="empty" style="margin:-6px 0 16px">Tes réponses restent sur ton téléphone.</p>
+    <div class="sec"><label class="sec-t" for="pqDate" style="display:block">Date du rapport</label><input type="date" id="pqDate" max="${t}" value="${pq.date}"></div>
+    <div class="sec"><div class="sec-t">Quelle contraception pendant ce rapport ?</div>${qchips('contra',PCONTRA,false)}</div>
+    <div class="sec"><div class="sec-t">As-tu pris une contraception d\u2019urgence ?</div>${qchips('ec',PEC,false)}</div>
+    <div class="sec"><div class="sec-t">As-tu fait un test de grossesse ?</div>${qchips('test',PTEST,false)}</div>
+    <div class="sec"><div class="sec-t">Remarques-tu un de ces signes ?</div>${qchips('signs',PSIGNS.map(x=>[x,x]),true)}</div>
+    <label class="checkline"><input type="checkbox" id="pqSave" ${pq.save?'checked':''}>Noter ce rapport dans mon calendrier</label>
+    ${pq.err?`<p class="err-msg">${pq.err}</p>`:''}
+    <div class="sheet-actions"><button class="btn ghost" id="pqCancel">Annuler</button><button class="btn" id="pqGo">Voir le résultat</button></div>`;
+  el.querySelectorAll('[data-qk]').forEach(b=>b.onclick=()=>{const k=b.dataset.qk,v=b.dataset.v;
+    if(b.dataset.m==='1'){const i=pq[k].indexOf(v);if(i>=0)pq[k].splice(i,1);else pq[k].push(v);b.setAttribute('aria-pressed',i<0)}
+    else{pq[k]=v;el.querySelectorAll(`[data-qk="${k}"]`).forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===v))}});
+  document.getElementById('pqCancel').onclick=closeSheet;
+  document.getElementById('pqGo').onclick=()=>{
+    pq.date=document.getElementById('pqDate').value;pq.save=document.getElementById('pqSave').checked;
+    if(!pq.date||pq.date>t){pq.err='Choisis la date du rapport (aujourd\u2019hui ou avant).';drawPreg();return}
+    if(!pq.contra){pq.err='Indique la contraception utilisée, ou « Je ne sais pas ».';drawPreg();return}
+    pq.err='';pq.res=pregResult();
+    if(pq.save){const x={...(state.days[pq.date]||{})};x.sex=RELIABLE.includes(pq.contra)?'protege':'nonprotege';if(pq.test!=='pas')x.pregTest=pq.test;setDay(pq.date,x);renderAll()}
+    drawPreg();document.getElementById('sheet').scrollTop=0;
+  };
+}
+function pregResult(){
+  const t=today(),d=pq.date,since=diff(d,t),m=model();let level,why=[];
+  if(pq.test==='pos')level='pos';
+  else if(RELIABLE.includes(pq.contra)){level='faible';why.push('Ta contraception était bien utilisée, elle protège très bien d\u2019une grossesse.')}
+  else{
+    const starts=m.ps.map(x=>x.start).filter(x=>x<=d);
+    if(!starts.length){level='possible';why.push('Sans règles notées avant ce rapport, l\u2019appli ne peut pas situer ta période fertile.')}
+    else{
+      const cs=starts[starts.length-1],nxt=m.ps.map(x=>x.start).find(x=>x>d);
+      const len=nxt?diff(cs,nxt):m.avgCycle,day=diff(cs,d)+1,ov=len-14+1;
+      if(state.days[d]?.period){level='bas';why.push('Le rapport a eu lieu pendant tes règles.')}
+      else if(day>=ov-5&&day<=ov+1){level='eleve';why.push(`Le rapport a eu lieu au jour ${day} de ton cycle, pendant ta période fertile estimée.`)}
+      else if(day>=ov-8&&day<=ov+4){level='possible';why.push(`Le rapport a eu lieu au jour ${day} de ton cycle, près de ta période fertile estimée.`)}
+      else{level='bas';why.push(`Le rapport a eu lieu au jour ${day} de ton cycle, en dehors de ta période fertile estimée.`)}
+      if(irregular(m)&&level==='bas'){level='possible';why.push('Comme tes cycles sont difficiles à prévoir, l\u2019ovulation a pu arriver plus tôt ou plus tard que prévu.')}
+    }
+    if(pq.contra==='retrait')why.push('Le retrait n\u2019est pas fiable : du sperme peut être présent avant l\u2019éjaculation.');
+    if(pq.contra==='pilule_ko')why.push('Un oubli de pilule peut réduire sa protection, surtout en début ou fin de plaquette.');
+    if(pq.ec==='pilule')why.push('La pilule du lendemain réduit fortement le risque, surtout si elle a été prise tôt.');
+    if(pq.ec==='cu')why.push('Le stérilet au cuivre posé à temps est la contraception d\u2019urgence la plus efficace.');
+  }
+  if(pq.signs.length&&level!=='pos')why.push('Les signes cochés peuvent avoir beaucoup d\u2019autres causes. Seul un test peut le dire.');
+  if(pq.test==='neg'&&level!=='pos')why.push('Un test négatif fait trop tôt peut se tromper : vérifie la date conseillée ci-dessous.');
+  return{level,why,since};
+}
+function pregResultHTML(){
+  const{level,why,since}=pq.res;const d=pq.date,t=today();
+  const L={pos:['Test positif','','var(--period)','var(--period-soft)'],
+    eleve:['Risque élevé','Ordre de grandeur : jusqu\u2019à 25 à 30 % pour un rapport','var(--period)','var(--period-soft)'],
+    possible:['Risque possible','Ordre de grandeur : de quelques % à 15 %','var(--accent)','var(--accent-soft)'],
+    bas:['Risque plus faible, mais pas nul','Ordre de grandeur : moins de 5 %','var(--ov)','var(--fertile-soft)'],
+    faible:['Risque très faible','Ordre de grandeur : moins de 1 %','var(--ov)','var(--fertile-soft)']}[level];
+  let pct=L[1];if(pct&&pq.ec!=='non'&&level!=='faible')pct+=', avant la contraception d\u2019urgence';
+  const todo=[];
+  if(level!=='pos'&&level!=='faible'&&pq.ec==='non'&&since<=5)todo.push('<b>Contraception d\u2019urgence, le plus tôt possible.</b> La pilule du lendemain est gratuite en pharmacie, sans ordonnance. Selon la pilule, elle peut être prise jusqu\u2019à 3 ou 5 jours après le rapport. Le stérilet au cuivre, posé jusqu\u2019à 5 jours après, est le plus efficace.');
+  if(level==='pos')todo.push('Prends rendez-vous avec un médecin, une sage-femme ou un centre de santé sexuelle (planning familial) pour en parler, quelle que soit ta décision.');
+  else if(level!=='faible'||pq.signs.length||pq.ec!=='non'){
+    const ci=cycleInfo();let td=add(d,21);if(ci&&ci.next>d&&ci.next<td)td=ci.next<add(d,14)?add(d,14):ci.next;
+    todo.push(td<=t?'<b>Tu peux faire un test de grossesse dès maintenant.</b> S\u2019il est négatif et que tes règles n\u2019arrivent pas, refais-en un quelques jours plus tard.':`<b>Fais un test de grossesse urinaire à partir du ${fmt(td,{weekday:'long',day:'numeric',month:'long'})}.</b> Avant, il risque de ne rien détecter. S\u2019il est négatif et que tes règles n\u2019arrivent pas, refais-en un quelques jours plus tard.`);
+  }
+  if(pq.contra!=='preserv_ok'&&pq.contra!=='nsp'||pq.contra==='nsp')todo.push('Sans préservatif, un rapport peut aussi transmettre des infections (IST). Le dépistage est gratuit dans les centres CeGIDD.');
+  todo.push('Une question ? Numéro national Sexualités, Contraception, IVG : <b>0 800 08 11 11</b>, gratuit et anonyme.');
+  return`<h2 id="sheetT" style="text-transform:none">Ton résultat</h2>
+    <div class="res" style="background:${L[3]}"><h3 style="color:${L[2]}">${L[0]}</h3>${pct?`<div class="pct">${pct}</div>`:''}${why.map(w=>`<p>${w}</p>`).join('')}</div>
+    <div class="sec-t">Ce que tu peux faire</div><ul class="todo">${todo.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <p class="note-small" style="margin-top:0">C\u2019est une estimation à partir de tes réponses et de tes cycles notés, pas un diagnostic. Seul un test de grossesse peut confirmer.</p>
+    <div class="sheet-actions"><button class="btn ghost" id="pqAgain">Modifier</button><button class="btn" id="pqClose">Fermer</button></div>`;
+}
+
+function renderSet(){
+  document.getElementById('sCycle').value=state.settings.cycle;
+  document.getElementById('sPeriod').value=state.settings.period;
+  renderProfile();
+}
+document.getElementById('sCycle').onchange=e=>{const v=Math.min(60,Math.max(18,+e.target.value||28));state.settings.cycle=v;save();renderAll()};
+document.getElementById('sPeriod').onchange=e=>{const v=Math.min(12,Math.max(1,+e.target.value||5));state.settings.period=v;save();renderAll()};
+document.getElementById('reset').onclick=()=>{if(confirm('Effacer toutes tes données ? Cette action est définitive.')){state={days:{},settings:DEF()};chat=[];save();saveChat();tipCache={};renderAll();renderChat();show('today')}};
+
+/* fiche du jour */
+let cur=null,tmp=null;
+function openSheet(date){
+  cur=date;const d=state.days[date]||{};
+  tmp=JSON.parse(JSON.stringify(d));tmp.symptoms=tmp.symptoms||[];tmp.moods=tmp.moods||[];tmp.life=tmp.life||[];
+  drawSheet();showSheet();
+}
+function showSheet(){document.getElementById('scrim').classList.add('on');requestAnimationFrame(()=>{const sh=document.getElementById('sheet');sh.scrollTop=0;sh.classList.add('on')})}
+function closeSheet(){document.getElementById('sheet').classList.remove('on');document.getElementById('scrim').classList.remove('on')}
+function readInputs(){
+  const g=id=>document.getElementById(id);if(!g('noteTa'))return;
+  tmp.note=g('noteTa').value.trim();
+  ['temp','weight','sleep'].forEach(k=>{const v=g('in_'+k).value;tmp[k]=v?+v:''});
+}
+function chipsHTML(k,opts,multi,cls=''){
+  return `<div class="chips">${opts.map(([v,l])=>{const on=multi?tmp[k].includes(v):tmp[k]===v;
+    return`<button class="chip ${cls}" data-k="${k}" data-v="${esc(v)}" data-m="${multi?1:0}" aria-pressed="${on}">${esc(l)}</button>`}).join('')}</div>`;
+}
+function drawSheet(){
+  const fut=cur>today();
+  document.getElementById('sheetIn').innerHTML=`<div class="grab"></div>
+    <h2 id="sheetT">${fmt(cur,{weekday:'long',day:'numeric',month:'long'})}</h2>
+    ${fut?'<p class="empty" style="margin:-6px 0 14px">Ce jour est dans le futur. Tu peux quand même ajouter une note.</p>':''}
+    <div class="sec"><button class="toggle" id="tgP" aria-pressed="${!!tmp.period}" ${fut?'disabled':''}>Règles ce jour<span class="sw2"></span></button></div>
+    ${tmp.period?`<div class="sec"><div class="sec-t">Flux</div>${chipsHTML('flow',FLOWS,false,'p')}</div>`:''}
+    <div class="sec"><div class="sec-t">Humeur</div>${chipsHTML('moods',MOODS,true)}</div>
+    <div class="sec"><div class="sec-t">Symptômes</div>${chipsHTML('symptoms',SYMPTOMS.map(s=>[s,s]),true)}</div>
+    <div class="sec"><label class="sec-t" for="painR" style="display:block">Douleur : <span id="painV">${tmp.pain==null||tmp.pain===''?'non notée':tmp.pain+'/10'}</span></label><input type="range" id="painR" min="0" max="10" step="1" value="${tmp.pain||0}"></div>
+    <div class="sec"><div class="sec-t">Mode de vie</div>${chipsHTML('life',LIFE.map(s=>[s,s]),true)}</div>
+    ${Object.entries(SINGLES).map(([k,o])=>`<div class="sec"><div class="sec-t">${o.t}</div>${chipsHTML(k,o.o,false)}</div>`).join('')}
+    <div class="sec"><div class="sec-t">Corps</div><div class="body-grid">
+      <div><label for="in_temp">Température (°C)</label><input type="number" id="in_temp" step="0.01" min="34" max="42" inputmode="decimal" value="${tmp.temp||''}" placeholder="36,50"></div>
+      <div><label for="in_weight">Poids (kg)</label><input type="number" id="in_weight" step="0.1" min="20" max="300" inputmode="decimal" value="${tmp.weight||''}"></div>
+      <div><label for="in_sleep">Sommeil (h)</label><input type="number" id="in_sleep" step="0.5" min="0" max="24" inputmode="decimal" value="${tmp.sleep||''}"></div>
+      <div><label>Eau (verres)</label><div class="wbox"><button class="rnd" id="sw-" aria-label="Retirer un verre">−</button><b id="swv">${tmp.water||0}</b><button class="rnd" id="sw+" aria-label="Ajouter un verre">+</button></div></div>
+    </div></div>
+    ${onPill()?`<div class="sec"><button class="toggle acc" id="tgPill" aria-pressed="${!!tmp.pill}">Pilule prise<span class="sw2"></span></button></div>`:''}
+    <div class="sec"><label class="sec-t" for="noteTa" style="display:block">Note</label><textarea id="noteTa" placeholder="Comment tu te sens aujourd'hui ?">${esc(tmp.note||'')}</textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" id="cancelS">Annuler</button><button class="btn" id="saveS">Enregistrer</button></div>`;
+  const q=s=>document.querySelectorAll('#sheetIn '+s);
+  if(!fut)document.getElementById('tgP').onclick=()=>{readInputs();tmp.period=!tmp.period;if(tmp.period&&!tmp.flow)tmp.flow='moyen';drawSheet()};
+  q('[data-k]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k,v=b.dataset.v;
+    if(b.dataset.m==='1'){const i=tmp[k].indexOf(v);if(i>=0)tmp[k].splice(i,1);else tmp[k].push(v);b.setAttribute('aria-pressed',i<0)}
+    else{tmp[k]=tmp[k]===v&&k!=='flow'?'':v;q(`[data-k="${k}"]`).forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===tmp[k]))}
+  });
+  document.getElementById('painR').oninput=e=>{tmp.pain=+e.target.value;document.getElementById('painV').textContent=tmp.pain+'/10'};
+  const wv=document.getElementById('swv');
+  document.getElementById('sw+').onclick=()=>{tmp.water=(tmp.water||0)+1;wv.textContent=tmp.water};
+  document.getElementById('sw-').onclick=()=>{tmp.water=Math.max(0,(tmp.water||0)-1);wv.textContent=tmp.water};
+  const tp=document.getElementById('tgPill');if(tp)tp.onclick=()=>{tmp.pill=!tmp.pill;tp.setAttribute('aria-pressed',tmp.pill)};
+  document.getElementById('cancelS').onclick=closeSheet;
+  document.getElementById('saveS').onclick=()=>{
+    readInputs();const x={};
+    if(tmp.period){x.period=true;x.flow=tmp.flow||'moyen'}
+    if(tmp.pain!=null&&tmp.pain!=='')x.pain=tmp.pain;if(tmp.life.length)x.life=tmp.life;
+    if(tmp.moods.length)x.moods=tmp.moods;if(tmp.symptoms.length)x.symptoms=tmp.symptoms;
+    for(const k in SINGLES)if(tmp[k])x[k]=tmp[k];
+    ['temp','weight','sleep'].forEach(k=>{if(tmp[k]!==''&&tmp[k]!=null&&!isNaN(tmp[k]))x[k]=tmp[k]});
+    if(tmp.water)x.water=tmp.water;if(tmp.pill)x.pill=true;if(tmp.note)x.note=tmp.note;
+    setDay(cur,x);closeSheet();renderAll();
+  };
+}
+document.getElementById('scrim').onclick=closeSheet;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+
+/* IA */
+let dl=null,sample=null,aiState='loading',chat=[],busy=false,ctl=null;
+try{chat=JSON.parse(localStorage.getItem(CHAT_KEY)||'[]')}catch(e){chat=[]}
+function saveChat(){try{localStorage.setItem(CHAT_KEY,JSON.stringify(chat.slice(-30)))}catch(e){}}
+const SUGG=['Analyse mes derniers jours et dis-moi ce que tu remarques','Comment soulager mes crampes naturellement ?','Est-ce normal d\u2019avoir un cycle irrégulier ?','Que manger pendant ma phase actuelle ?','Pourquoi je suis plus irritable avant mes règles ?'];
+
+function userContext(){
+  const ci=cycleInfo();const t=today();
+  const lines=[];
+  if(ci){
+    lines.push(`Aujourd'hui : ${fmt(t,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}.`);
+    lines.push(`Jour ${ci.cday} du cycle, phase estimée : ${PHASES[ci.phase].t}.`);
+    lines.push(`Cycle moyen : ${ci.m.avgCycle} jours (${ci.m.cycles.length?'calculé sur '+Math.min(6,ci.m.cycles.length)+' cycle(s)':'valeur par défaut'}). Règles moyennes : ${ci.m.avgLen} jours.`);
+    lines.push(`Prochaines règles estimées : ${fmt(ci.next,{day:'numeric',month:'long'})}.`);
+    if(ci.m.cycles.length)lines.push(`Durées des derniers cycles : ${ci.m.cycles.slice(-6).join(', ')} jours.`);
+  }else lines.push("L'utilisatrice n'a encore noté aucune règle.");
+  const p=prof();const pl=[];if(p.age)pl.push(p.age+' ans');if(p.height)pl.push(p.height+' cm');const w=latestWeight();if(w)pl.push(w+' kg');
+  if(pl.length)lines.push('Profil : '+pl.join(', ')+'.');
+  if(p.goal)lines.push('Objectif : '+optLab(GOALS,p.goal)+'.');
+  if(p.contraception)lines.push('Contraception : '+optLab(CONTRA,p.contraception)+'.');
+  const cond=[...(p.conditions||[]),p.other].filter(Boolean);if(cond.length)lines.push('Santé (indiqué par elle) : '+cond.join(', ')+'.');
+  const logs=[];for(let i=29;i>=0;i--){const s=add(t,-i);const d=state.days[s];if(d){const b=summarize(d);if(b.length)logs.push(`- ${fmt(s,{day:'numeric',month:'short'})} : ${b.join(' ; ')}`)}}
+  const ins=insights();if(ins.length)lines.push('Tendances repérées par l\u2019appli :\n'+ins.map(i=>'- '+i.t).join('\n'));
+  lines.push(logs.length?'Notes des 30 derniers jours :\n'+logs.join('\n'):'Aucune note sur les 30 derniers jours.');
+  return lines.join('\n');
+}
+const SYS=`Tu es Lune IA, l'assistante d'une application de suivi du cycle menstruel. Réponds en français, en tutoyant, avec un ton chaleureux, rassurant et sans jugement. Sois concise (environ 120 mots maximum sauf si on te demande plus), en texte simple, avec éventuellement quelques tirets, sans titres ni tableaux.
+Tu n'es pas médecin : ne pose jamais de diagnostic et ne prescris pas de médicament. Donne des informations générales fiables et des conseils de bien-être. Si l'utilisatrice décrit des douleurs très fortes, des saignements très abondants, de la fièvre, des pertes inhabituelles avec odeur ou démangeaisons, un retard important avec une possible grossesse, ou tout signe inquiétant, encourage-la avec douceur à consulter un·e professionnel·le de santé. Rappelle si c'est pertinent que les prédictions de l'appli sont des estimations et pas une méthode de contraception. Si elle parle de détresse ou d'idées de se faire du mal, réponds avec empathie et oriente-la vers le 3114 (numéro national de prévention du suicide en France).
+Tiens compte de son profil (âge, objectif, contraception, maladies comme l'endométriose ou le SOPK) pour adapter tes réponses. Ne commente pas son poids ou son corps sauf si elle le demande, et ne propose jamais de régime restrictif.
+Utilise ses données ci-dessous quand c'est utile, sans les réciter.`;
+
+function md(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}
+function renderChat(){
+  if(aiState==='ext'){renderExt();return}
+  const box=document.getElementById('msgs');
+  box.innerHTML=chat.map(c=>`<div class="msg ${c.role==='user'?'u':c.role==='err'?'err':'a'}${c.pending&&!c.content?' think':''}">${c.pending&&!c.content?'Lune réfléchit…':md(c.content)}</div>`).join('');
+  document.getElementById('sugg').innerHTML=chat.length||aiState==='off'?'':SUGG.map(s=>`<button>${esc(s)}</button>`).join('');
+  document.querySelectorAll('#sugg button').forEach(b=>b.onclick=()=>ask(b.textContent));
+  const off=document.getElementById('aiOff');
+  off.hidden=aiState!=='off';
+  if(aiState==='off')off.textContent="L'assistant IA n'est pas disponible ici. Ouvre l'appli depuis Claude pour l'utiliser.";
+  document.getElementById('composer').style.display=aiState==='off'?'none':'flex';
+  document.getElementById('aiSend').disabled=busy;
+  document.getElementById('aiStop').hidden=!busy;
+  document.getElementById('aiNew').hidden=!chat.length||busy;
+}
+const errCopy=c=>({not_granted:"L'accès à l'IA a été refusé. Recharge la page pour réessayer.",rate_limited:'Trop de questions d\u2019un coup. Attends un peu et réessaie.',cancelled:''}[c]??"L'IA n'a pas pu répondre. Réessaie dans un instant.");
+
+async function ask(q){
+  q=(q||'').trim();if(!q||busy)return;
+  if(aiState==='ext'){handoff(q);return}
+  if(!sample){chat.push({role:'user',content:q},{role:'err',content:aiState==='loading'?'L\u2019IA se prépare, réessaie dans quelques secondes.':errCopy('')});renderChat();return}
+  chat.push({role:'user',content:q});
+  const conv=chat.filter(c=>c.role==='user'||c.role==='assistant').slice(-12);
+  while(conv.length&&conv[0].role!=='user')conv.shift();
+  const turns=conv.map((c,i)=>({role:c.role,content:i===0?`${SYS}\n\nDonnées de l'utilisatrice :\n${userContext()}\n\nMessage de l'utilisatrice :\n${c.content}`:c.content}));
+  const a={role:'assistant',content:'',pending:true};chat.push(a);
+  busy=true;ctl=new AbortController();renderChat();
+  const box=document.getElementById('msgs');
+  try{
+    const r=await sample(turns,{signal:ctl.signal,cache:false,onText:({text})=>{a.content=text;const el=box.lastElementChild;if(el){el.classList.remove('think');el.innerHTML=md(text)}}});
+    a.content=r.text;
+  }catch(e){
+    if(e&&e.text)a.content=e.text;else chat.splice(chat.indexOf(a),1);
+    const msg=errCopy(e&&e.code);if(msg)chat.push({role:'err',content:msg});
+  }finally{delete a.pending;busy=false;saveChat();renderChat();window.scrollTo(0,document.body.scrollHeight)}
+}
+document.getElementById('aiSend').onclick=()=>{const i=document.getElementById('aiIn');const v=i.value;i.value='';ask(v)};
+document.getElementById('aiIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('aiSend').click()}});
+document.getElementById('aiStop').onclick=()=>ctl&&ctl.abort();
+document.getElementById('aiNew').onclick=()=>{chat=[];saveChat();renderChat()};
+
+let extNote='';
+function renderExt(){
+  document.querySelector('#v-ai .ai-intro').textContent='Écris ta question : Lune la prépare avec tes données de cycle, la copie et ouvre Claude. Tu n\u2019as plus qu\u2019à coller et envoyer.';
+  document.getElementById('aiOff').hidden=true;
+  document.getElementById('sugg').innerHTML=SUGG.map(x=>`<button>${esc(x)}</button>`).join('');
+  document.querySelectorAll('#sugg button').forEach(b=>b.onclick=()=>ask(b.textContent));
+  document.getElementById('msgs').innerHTML=extNote;
+  document.getElementById('composer').style.display='flex';
+  const sb=document.getElementById('aiSend');sb.disabled=false;sb.textContent='↗';sb.setAttribute('aria-label','Copier et ouvrir Claude');
+  document.getElementById('aiStop').hidden=true;document.getElementById('aiNew').hidden=true;
+  const fb=document.getElementById('extCopy');if(fb){fb.focus();fb.select()}
+}
+function handoff(q){
+  const text=`${SYS}\n\nDonnées de l'utilisatrice :\n${userContext()}\n\nMessage de l'utilisatrice :\n${q}`;
+  const ok=()=>{extNote=`<div class="msg a">✅ Copié ! Dans Claude, appuie longuement dans la zone de texte puis « Coller », et envoie.<br><br><button class="link" id="reopen">Rouvrir Claude</button></div>`;renderExt();
+    document.getElementById('reopen').onclick=()=>window.open('https://claude.ai/new','_blank');
+    window.open('https://claude.ai/new','_blank')};
+  const fail=()=>{extNote=`<div class="msg a">La copie automatique n\u2019a pas marché. Sélectionne tout le texte ci-dessous, copie-le, puis ouvre Claude.<textarea id="extCopy" style="margin-top:10px;min-height:140px" readonly>${esc(text)}</textarea><button class="link" id="reopen" style="margin-top:8px">Ouvrir Claude</button></div>`;renderExt();
+    document.getElementById('reopen').onclick=()=>window.open('https://claude.ai/new','_blank')};
+  try{navigator.clipboard.writeText(text).then(ok,fail)}catch(e){fail()}
+}
+async function getTip(tk){
+  const box=document.getElementById('tipBox');
+  if(!sample){box.innerHTML=`<p>${aiState==='loading'?'L\u2019IA se prépare, réessaie dans quelques secondes.':'L\u2019IA n\u2019est pas disponible ici.'}</p>`;return}
+  box.innerHTML='<p>Lune réfléchit…</p>';
+  try{
+    const r=await sample(`${SYS}\n\nDonnées de l'utilisatrice :\n${userContext()}\n\nÉcris-lui un seul conseil bien-être personnalisé pour aujourd'hui, adapté à sa phase et à ce qu'elle a noté récemment. 2 à 3 phrases, bienveillant et concret, sans formule d'introduction.`,{modelTier:'quick',onText:({text})=>{box.innerHTML=`<div class="tip-out">${md(text)}</div>`}});
+    tipCache[tk]=r.text;box.innerHTML=`<div class="tip-out">${md(r.text)}</div>`;
+  }catch(e){box.innerHTML=`<p>${esc(errCopy(e&&e.code)||'Conseil annulé.')}</p>`}
+}
+
+(async()=>{
+  try{if(window.claude&&claude.use)sample=await claude.use('sample')}catch(e){sample=null}
+  aiState=sample?'ok':(STANDALONE?'ext':'off');renderChat();
+  try{if(window.claude&&claude.use){dl=await claude.use('downloads');if(dl)renderStats()}}catch(e){dl=null}
+})();
+setTimeout(()=>{if(aiState==='loading'&&!sample){aiState=STANDALONE?'ext':'off';renderChat()}},12000);
+
+/* partage */
+let db=null,me=null,canWrite=null,shareDocs=[],dbState='loading',shareErr='',lastPushed='',pushing=false,pushAgain=false,partnerTip={};
+const partnerDocs=()=>shareDocs.filter(d=>d.by&&d.by!==me);
+const PTIPS={
+  regles:"Elle peut avoir des crampes ou être fatiguée. Une bouillotte, un plat chaud ou une corvée en moins font souvent du bien. Le mieux : lui demander ce qui l\u2019aiderait.",
+  folliculaire:"Souvent une période où l\u2019énergie remonte. Bon moment pour proposer une sortie ou une activité à deux.",
+  fertile:"Période fertile estimée. Si vous ne voulez pas d\u2019enfant pour l\u2019instant, soyez particulièrement attentifs à la contraception.",
+  ovulation:"Jour d\u2019ovulation estimé. Si vous ne voulez pas d\u2019enfant pour l\u2019instant, soyez particulièrement attentifs à la contraception.",
+  luteale:"Avant les règles, certaines se sentent plus fatiguées ou sensibles. Un peu plus de patience et de petites attentions, ça compte.",
+  retard:"Ses règles ont du retard. Ça arrive souvent sans raison grave (stress, fatigue). Si ça vous inquiète, parlez-en ensemble calmement."};
+function buildSnap(){
+  const ci=cycleInfo(),sh=state.settings.share,t=today(),d=state.days[t]||{};
+  const o={by:me,name:(sh.name||'').slice(0,30),updated:new Date().toISOString(),day:t};
+  if(sh.phase&&ci){o.phase=ci.phase;o.phaseLabel=PHASES[ci.phase].t;o.cday=ci.cday;o.next=ci.next}
+  if(sh.mood&&d.moods?.length)o.moods=d.moods.map(x=>lab('mood',x));
+  if(sh.symptoms&&d.symptoms?.length)o.symptoms=d.symptoms;
+  if(sh.pain&&d.pain!=null&&d.pain!=='')o.pain=+d.pain;
+  if(sh.msg)o.msg=sh.msg.slice(0,200);
+  return o;
+}
+function syncShare(){
+  if(!db||!me||!state.settings.share.on||!cycleInfo())return;
+  const snap=buildSnap();const key=JSON.stringify({...snap,updated:0});
+  if(key===lastPushed)return;
+  if(pushing){pushAgain=true;return}
+  pushing=true;
+  db.doc('partage/'+me).set(snap).then(()=>{lastPushed=key;shareErr=''}).catch(e=>{shareErr=(e&&e.code)||'error';renderShare()})
+    .finally(()=>{pushing=false;if(pushAgain){pushAgain=false;syncShare()}});
+}
+function ago(iso){const mn=Math.round((Date.now()-new Date(iso))/6e4);if(mn<2)return'à l\u2019instant';if(mn<60)return`il y a ${mn} min`;const h=Math.round(mn/60);if(h<24)return`il y a ${plural(h,'heure')}`;return`il y a ${plural(Math.round(h/24),'jour')}`}
+function partnerCard(p){
+  const t=today(),nm=esc(p.name||'Ta partenaire');let h='';
+  if(p.phase){const until=diff(t,p.next);const cday=p.cday+diff(p.day,t);
+    const ph=p.day===t?p.phase:(until<0?'retard':p.phase);
+    const big=p.phase==='regles'&&p.day===t?'A ses règles':until>0?`Règles dans ${plural(until,'jour')}`:until===0?'Règles prévues aujourd\u2019hui':`Règles en retard de ${plural(-until,'jour')}`;
+    h+=`<div class="sub">${nm}, jour ${cday} du cycle</div><div class="big">${big}</div><span class="pill" style="background:${PHASES[ph].bg};color:${PHASES[ph].c}">${PHASES[ph].t}</span>
+      <p style="margin:6px 0 0;font-size:15px">${PTIPS[ph]}</p>`}
+  else h+=`<div class="big">${nm}</div>`;
+  const when=p.day===t?'aujourd\u2019hui':'le '+fmt(p.day,{day:'numeric',month:'long'});
+  if(p.moods)h+=`<div class="prow"><span>Humeur ${when}</span><span>${esc(p.moods.join(', '))}</span></div>`;
+  if(p.symptoms)h+=`<div class="prow"><span>Symptômes ${when}</span><span>${esc(p.symptoms.join(', '))}</span></div>`;
+  if(p.pain!=null)h+=`<div class="prow"><span>Douleur ${when}</span><span>${p.pain}/10</span></div>`;
+  if(p.msg)h+=`<div class="mot">💌 ${esc(p.msg)}</div>`;
+  h+=`<div class="sub" style="margin-top:10px">Mis à jour ${ago(p.updated)}</div>`;
+  const k=p.by+t;
+  h+=`<div class="tip">${partnerTip[k]?`<div class="tip-out">${esc(partnerTip[k])}</div>`:`<button class="link" data-ptip="${esc(p.by)}">✨ Une idée pour lui faire plaisir aujourd\u2019hui</button>`}</div>`;
+  return`<div class="pcard">${h}</div>`;
+}
+async function getPartnerTip(by){
+  const p=partnerDocs().find(x=>x.by===by);if(!p)return;const k=by+today();
+  const btn=document.querySelector(`[data-ptip="${CSS.escape(by)}"]`);
+  if(!sample){if(btn)btn.parentElement.innerHTML='<p>L\u2019IA n\u2019est pas disponible ici.</p>';return}
+  if(btn)btn.parentElement.innerHTML='<p>Lune réfléchit…</p>';
+  const info=[p.phaseLabel&&`Phase du cycle : ${p.phaseLabel}`,p.moods&&`Humeur : ${p.moods.join(', ')}`,p.symptoms&&`Symptômes : ${p.symptoms.join(', ')}`,p.pain!=null&&`Douleur : ${p.pain}/10`].filter(Boolean).join('. ');
+  try{const r=await sample(`Tu aides un partenaire à être attentionné envers sa copine. Ce qu'elle a choisi de partager : ${info||'rien de précis'}. Propose UNE idée concrète, simple et respectueuse pour lui faire plaisir ou la soulager aujourd'hui, en 2 phrases, en français, en tutoyant le partenaire. Rappelle-lui en quelques mots de lui demander ce dont elle a envie. Pas de cliché, pas de jugement.`,{modelTier:'quick'});
+    partnerTip[k]=r.text;renderShare()}
+  catch(e){const b=document.querySelector('#v-share .tip');if(b)b.innerHTML=`<p>${esc(errCopy(e&&e.code)||'Annulé.')}</p>`}
+}
+function shareText(){
+  const ci=cycleInfo(),sh=state.settings.share,t=today(),d=state.days[t]||{};const L=['🌙 Lune'+(sh.name?' · '+sh.name:'')];
+  if(sh.phase&&ci){L.push(`Jour ${ci.cday} du cycle, ${PHASES[ci.phase].t.toLowerCase()}`);
+    L.push(ci.phase==='regles'?'Règles en cours':ci.until>0?`Règles prévues dans ${plural(ci.until,'jour')} (le ${fmt(ci.next,{day:'numeric',month:'long'})})`:ci.until===0?'Règles prévues aujourd\u2019hui':`Règles en retard de ${plural(-ci.until,'jour')}`)}
+  if(sh.mood&&d.moods?.length)L.push('Humeur : '+d.moods.map(x=>lab('mood',x)).join(', '));
+  if(sh.symptoms&&d.symptoms?.length)L.push('Symptômes : '+d.symptoms.join(', '));
+  if(sh.pain&&d.pain!=null&&d.pain!=='')L.push('Douleur : '+d.pain+'/10');
+  if(sh.msg)L.push('💌 '+sh.msg);
+  return L.join('\n');
+}
+function renderShareLocal(){
+  const el=document.getElementById('v-share'),sh=state.settings.share,ci=cycleInfo();
+  let h=`<h2 class="vt">Partage</h2><p class="ai-intro">Envoie un petit résumé de ton cycle à ton partenaire par message (WhatsApp, SMS…). Tu choisis ce que tu partages.</p>`;
+  if(!ci)h+=`<p class="empty">Note d\u2019abord tes dernières règles dans l\u2019onglet Aujourd\u2019hui.</p>`;
+  else{
+    const tg=(k,l)=>`<button class="toggle acc" data-sh="${k}" aria-pressed="${!!sh[k]}" style="margin-bottom:8px">${l}<span class="sw2"></span></button>`;
+    h+=`<div class="set" style="margin-top:0"><label class="field" for="shName">Ton prénom</label><input type="text" id="shName" maxlength="30" value="${esc(sh.name)}">
+      <div class="sec-t" style="margin-top:16px">Ce que tu partages</div>
+      ${tg('phase','Phase et prochaines règles')}${tg('mood','Mon humeur du jour')}${tg('symptoms','Mes symptômes du jour')}${tg('pain','Ma douleur du jour')}
+      <label class="field" for="shMsg" style="margin-top:14px">Petit mot (facultatif)</label><input type="text" id="shMsg" maxlength="200" placeholder="Ex : aujourd\u2019hui j\u2019ai besoin de calme 🫶" value="${esc(sh.msg)}"></div>
+      <h3>Aperçu</h3><div class="mot" style="white-space:pre-wrap;margin-top:0;border:1px solid var(--line)">${esc(shareText())}</div>
+      ${ci&&sh.phase?`<p class="note-small" style="margin-top:10px">Conseil pour lui : ${PTIPS[ci.phase]}</p>`:''}
+      <button class="btn wide" id="shSend" style="margin-top:14px">Envoyer à mon partenaire</button><p class="empty" id="shInfo" style="text-align:center;margin-top:8px"></p>`;
+  }
+  el.innerHTML=h;
+  el.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>{const k=b.dataset.sh;sh[k]=!sh[k];save();renderShareLocal()});
+  const nm=document.getElementById('shName');if(nm)nm.onchange=e=>{sh.name=e.target.value.trim();save();renderShareLocal()};
+  const ms=document.getElementById('shMsg');if(ms)ms.onchange=e=>{sh.msg=e.target.value.trim();save();renderShareLocal()};
+  const sb=document.getElementById('shSend');if(sb)sb.onclick=async()=>{const text=shareText();const info=document.getElementById('shInfo');
+    try{if(navigator.share){await navigator.share({text});return}}catch(e){if(e&&e.name==='AbortError')return}
+    try{await navigator.clipboard.writeText(text);info.textContent='Copié ! Colle-le dans ta conversation avec lui.'}catch(e){info.textContent='Copie le texte de l\u2019aperçu à la main.'}};
+}
+function renderShare(){
+  if(STANDALONE){renderShareLocal();return}
+  const el=document.getElementById('v-share');if(!el)return;const sh=state.settings.share;const ci=cycleInfo();
+  let h=`<h2 class="vt">Partage</h2><p class="ai-intro">Partage ce que tu veux de ton cycle avec ton ou ta partenaire. Tu choisis, et tu peux arrêter quand tu veux.</p>`;
+  if(dbState==='loading')h+=`<p class="empty">Chargement…</p>`;
+  else if(dbState==='off')h+=`<div class="ai-off">Le partage n\u2019est pas disponible ici. Ouvre l\u2019appli depuis Claude, connecté·e à ton compte.</div>`;
+  else{
+    const pd=partnerDocs();
+    if(pd.length)h+=`<h3 style="margin-top:6px">Ce qu\u2019on partage avec toi</h3>`+pd.map(partnerCard).join('');
+    h+=`<h3>Partager mon cycle</h3>`;
+    if(!ci)h+=`<p class="empty">Note d\u2019abord tes dernières règles dans l\u2019onglet Aujourd\u2019hui pour pouvoir partager.</p>`;
+    else if(canWrite===false)h+=`<div class="ai-off">Pour partager, la personne qui a créé l\u2019appli doit t\u2019inviter par e-mail avec le droit de modifier (bouton Partager de l\u2019appli). Ensuite, recharge la page.</div>`;
+    else{
+      const tg=(k,l)=>`<button class="toggle acc" data-sh="${k}" aria-pressed="${!!sh[k]}" style="margin-bottom:8px">${l}<span class="sw2"></span></button>`;
+      h+=`<div class="set" style="margin-top:0">
+        <label class="field" for="shName">Ton prénom (affiché à ton partenaire)</label><input type="text" id="shName" maxlength="30" value="${esc(sh.name)}">
+        <div class="sec-t" style="margin-top:16px">Ce que tu partages</div>
+        ${tg('phase','Phase et prochaines règles')}${tg('mood','Mon humeur du jour')}${tg('symptoms','Mes symptômes du jour')}${tg('pain','Ma douleur du jour')}
+        <p>Jamais partagé : tes notes, rapports, tests, poids, température et ton profil santé.</p>
+        <label class="field" for="shMsg" style="margin-top:14px">Petit mot pour lui ou elle (facultatif)</label><input type="text" id="shMsg" maxlength="200" placeholder="Ex : aujourd\u2019hui j\u2019ai besoin de calme 🫶" value="${esc(sh.msg)}">
+        ${shareErr?`<p class="err-msg" style="margin:10px 0 0">Le partage n\u2019a pas pu être envoyé. Vérifie que tu as bien le droit de modifier l\u2019appli.</p>`:''}
+        <button class="btn wide ${sh.on?'ghost':''}" id="shToggle" style="margin-top:14px">${sh.on?'Arrêter le partage':'Activer le partage'}</button>
+        ${sh.on?`<p style="text-align:center">Partage actif. Il se met à jour quand tu ouvres l\u2019appli ou notes quelque chose.</p>`:''}</div>`;
+      if(sh.on&&me){h+=`<h3>Ce que voit ton partenaire</h3>`+partnerCard({...buildSnap(),updated:new Date().toISOString()}).replace(/<div class="tip">[\s\S]*?<\/div><\/div>$/,'</div>')}
+    }
+    if(!pd.length&&!ci)h+=`<p class="empty" style="margin-top:14px">Rien n\u2019est partagé avec toi pour l\u2019instant. Quand ta partenaire active le partage sur son téléphone, son cycle apparaît ici.</p>`;
+  }
+  el.innerHTML=h;
+  el.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>{const k=b.dataset.sh;sh[k]=!sh[k];save();syncShare();renderShare()});
+  const nm=document.getElementById('shName');if(nm)nm.onchange=e=>{sh.name=e.target.value.trim();save();syncShare();renderShare()};
+  const ms=document.getElementById('shMsg');if(ms)ms.onchange=e=>{sh.msg=e.target.value.trim();save();syncShare();renderShare()};
+  const tb=document.getElementById('shToggle');if(tb)tb.onclick=async()=>{
+    if(sh.on){sh.on=false;save();lastPushed='';try{await db.doc('partage/'+me).delete()}catch(e){}renderShare()}
+    else{sh.on=true;save();syncShare();renderShare()}};
+  el.querySelectorAll('[data-ptip]').forEach(b=>b.onclick=()=>getPartnerTip(b.dataset.ptip));
+}
+(async()=>{
+  try{
+    if(!(window.claude&&claude.use)){dbState='off';renderShare();return}
+    const[dbx,ux]=await Promise.all([claude.use('db'),claude.use('user')]);
+    db=dbx;if(!db){dbState='off';renderShare();return}
+    if(ux){me=await ux.id();try{canWrite=ux.can?await ux.can('data.write'):null}catch(e){canWrite=null}}
+    if(!me){dbState='off';renderShare();return}
+    dbState='ok';
+    db.collection('partage').onSnapshot(snap=>{shareDocs=snap.docs.map(d=>d.data()).filter(Boolean);renderShare();if(!cycleInfo())renderToday()},err=>{dbState='off';renderShare()});
+    renderShare();syncShare();
+  }catch(e){dbState='off';renderShare()}
+})();
+setTimeout(()=>{if(dbState==='loading'){dbState='off';renderShare()}},12000);
+
+/* navigation */
+function show(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  document.querySelectorAll('.tab').forEach(b=>{if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v));
+document.getElementById('gear').onclick=()=>show('set');
+document.getElementById('prevM').onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()-1);renderCal()};
+document.getElementById('nextM').onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()+1);renderCal()};
+
+function renderAll(){
+  document.getElementById('dateNow').textContent=fmt(today(),{weekday:'long',day:'numeric',month:'long'});
+  renderToday();renderCal();renderStats();renderSet();renderShare();syncShare();
+}
+load();renderAll();renderChat();
+</script>
+</body>
+</html>
